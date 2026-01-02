@@ -1,0 +1,73 @@
+import SwiftUI
+
+/// Main content view with tab navigation
+public struct ContentView: View {
+    @State private var viewModel = SpaceWeatherViewModel()
+    @State private var selectedTab = 0
+    
+    public init() {
+        // Custom tab bar appearance
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor(white: 0.06, alpha: 0.95)
+        
+        // Unselected state
+        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(white: 0.5, alpha: 1)
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor(white: 0.5, alpha: 1),
+            .font: UIFont.monospacedSystemFont(ofSize: 10, weight: .medium)
+        ]
+        
+        // Selected state
+        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(Theme.tabAccent)
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
+            .foregroundColor: UIColor(Theme.tabAccent),
+            .font: UIFont.monospacedSystemFont(ofSize: 10, weight: .bold)
+        ]
+        
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+    }
+    
+    public var body: some View {
+        TabView(selection: $selectedTab) {
+            SDOImageView(viewModel: viewModel)
+                .tabItem {
+                    Label {
+                        Text("THE SUN")
+                    } icon: {
+                        Image(systemName: "sun.max.fill")
+                    }
+                }
+                .tag(0)
+            
+            ActivityView(viewModel: viewModel)
+                .tabItem {
+                    Label {
+                        Text("ACTIVITY")
+                    } icon: {
+                        Image(systemName: "waveform.path.ecg")
+                    }
+                }
+                .tag(1)
+            
+            SettingsView(viewModel: viewModel)
+                .tabItem {
+                    Label {
+                        Text("SETTINGS")
+                    } icon: {
+                        Image(systemName: "gearshape.fill")
+                    }
+                }
+                .tag(2)
+        }
+        .tint(Theme.tabAccent)
+        .task {
+            // Load data once at startup (stays in RAM)
+            await viewModel.loadXRayFlux()
+            await viewModel.loadEvents()
+            await viewModel.loadFlareProbabilities()
+        }
+        .preferredColorScheme(.dark)
+    }
+}
