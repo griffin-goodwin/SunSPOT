@@ -20,6 +20,10 @@ struct SDOImageView: View {
     var body: some View {
         NavigationStack {
             ZStack {
+                // Background gradient that changes with wavelength/instrument
+                DynamicColorBackground(accentColor: instrumentColor)
+                    .animation(.easeInOut(duration: 0.5), value: instrumentColor.description)
+                
                 ScrollView {
                     VStack(spacing: 16) {
                         // Instrument selector
@@ -48,7 +52,6 @@ struct SDOImageView: View {
                     .padding(.vertical)
                 }
                 .scrollContentBackground(.hidden)
-                .background(Theme.backgroundGradient)
                 // When the animation drawer is open, visually separate foreground/background
                 .blur(radius: showAnimationDrawer ? 8 : 0)
                 .overlay {
@@ -88,13 +91,14 @@ struct SDOImageView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("SOL.")
-                        .font(Theme.mono(32, weight: .black))
+                        .font(Theme.mono(42, weight: .black))
                         .tracking(3)
                         .foregroundStyle(Theme.solarTitleGradient)
                         .shadow(color: Theme.accentColor.opacity(0.5), radius: 8, x: 0, y: 0)
+                        .offset(x: 10) // Offset to compensate for trailing button
                 }
                 
-                ToolbarItem(placement: .automatic) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         Task { await loadInstrumentImage() }
                     } label: {
@@ -134,20 +138,20 @@ struct SDOImageView: View {
     
     private var instrumentSelector: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
+            HStack(spacing: Theme.Spacing.md) {
                 ForEach(SolarInstrument.allCases) { instrument in
                     InstrumentChip(
                         instrument: instrument,
                         isSelected: selectedInstrument == instrument,
                         wavelength: instrument == .sdoAIA ? viewModel.selectedWavelength : nil
                     ) {
-                        withAnimation(.easeInOut(duration: 0.2)) {
+                        withAnimation(Theme.Animation.spring) {
                             selectedInstrument = instrument
                         }
                     }
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, Theme.Spacing.lg)
         }
     }
     
@@ -156,50 +160,64 @@ struct SDOImageView: View {
     private var imageSection: some View {
         ZStack {
             if isLoadingImage {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.black.opacity(0.3))
+                RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                    .fill(Color.black.opacity(0.35))
                     .aspectRatio(1, contentMode: .fit)
                     .overlay {
-                        VStack(spacing: 12) {
+                        VStack(spacing: Theme.Spacing.md) {
                             ProgressView()
-                                .scaleEffect(1.5)
+                                .scaleEffect(1.4)
                                 .tint(instrumentColor)
                             Text("Loading \(selectedInstrument.displayName)...")
-                                .font(Theme.mono(12))
-                                .foregroundStyle(.white.opacity(0.6))
+                                .font(Theme.mono(12, weight: .medium))
+                                .foregroundStyle(Theme.tertiaryText)
                         }
                     }
+                    .shimmer()
             } else if let url = currentImageURL {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.black.opacity(0.3))
+                        RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                            .fill(Color.black.opacity(0.35))
                             .aspectRatio(1, contentMode: .fit)
                             .overlay {
                                 ProgressView()
-                                    .scaleEffect(1.5)
+                                    .scaleEffect(1.4)
                                     .tint(instrumentColor)
                             }
+                            .shimmer()
                     case .success(let image):
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                            .shadow(color: instrumentColor.opacity(0.6), radius: 25)
+                            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous))
+                            .shadow(color: instrumentColor.opacity(0.5), radius: 20)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                                    .stroke(
+                                        LinearGradient(
+                                            colors: [instrumentColor.opacity(0.3), instrumentColor.opacity(0.1)],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        ),
+                                        lineWidth: 1
+                                    )
+                            )
+                            .transition(.opacity.combined(with: .scale(scale: 0.98)))
                     case .failure:
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.black.opacity(0.3))
+                        RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                            .fill(Color.black.opacity(0.35))
                             .aspectRatio(1, contentMode: .fit)
                             .overlay {
-                                VStack(spacing: 8) {
+                                VStack(spacing: Theme.Spacing.sm) {
                                     Image(systemName: "exclamationmark.triangle")
-                                        .font(.largeTitle)
-                                        .foregroundStyle(instrumentColor)
+                                        .font(.system(size: 32))
+                                        .foregroundStyle(instrumentColor.opacity(0.6))
                                     Text("Unable to load image")
-                                        .font(Theme.mono(12))
+                                        .font(Theme.mono(12, weight: .medium))
+                                        .foregroundStyle(Theme.secondaryText)
                                 }
-                                .foregroundStyle(.secondary)
                             }
                     @unknown default:
                         EmptyView()
@@ -208,18 +226,18 @@ struct SDOImageView: View {
                 .id(url)  // Force view recreation with animation when URL changes
                 .transition(.opacity)
             } else {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.black.opacity(0.3))
+                RoundedRectangle(cornerRadius: Theme.Radius.xl, style: .continuous)
+                    .fill(Color.black.opacity(0.35))
                     .aspectRatio(1, contentMode: .fit)
                     .overlay {
-                        VStack(spacing: 8) {
+                        VStack(spacing: Theme.Spacing.md) {
                             Image(systemName: selectedInstrument.icon)
-                                .font(.largeTitle)
-                                .foregroundStyle(instrumentColor)
+                                .font(.system(size: 36))
+                                .foregroundStyle(instrumentColor.opacity(0.6))
                             Text("Tap refresh to load")
-                                .font(Theme.mono(12))
+                                .font(Theme.mono(12, weight: .medium))
+                                .foregroundStyle(Theme.tertiaryText)
                         }
-                        .foregroundStyle(.secondary)
                     }
             }
         }
@@ -328,65 +346,88 @@ struct SDOImageView: View {
     
     private var animationButton: some View {
         Button {
-            withAnimation(.easeInOut(duration: 0.25)) {
+            withAnimation(Theme.Animation.spring) {
                 showAnimationDrawer = true
             }
         } label: {
-            HStack {
-                Image(systemName: "play.circle.fill")
-                    .font(.title2)
+            HStack(spacing: Theme.Spacing.md) {
+                ZStack {
+                    Circle()
+                        .fill(instrumentColor.opacity(0.15))
+                        .frame(width: 40, height: 40)
+                    Image(systemName: "play.circle.fill")
+                        .font(.system(size: 22))
+                        .foregroundStyle(instrumentColor)
+                }
+                
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Create Animation")
-                        .font(Theme.mono(14, weight: .medium))
+                        .font(Theme.mono(14, weight: .semibold))
                     Text("Generate a timelapse for \(selectedInstrument.displayName)")
-                        .font(Theme.mono(11))
-                        .foregroundStyle(.white.opacity(0.6))
+                        .font(Theme.mono(10))
+                        .foregroundStyle(Theme.tertiaryText)
                 }
+                
                 Spacer()
+                
                 Image(systemName: "chevron.up")
-                    .font(Theme.mono(10))
-                    .foregroundStyle(.white.opacity(0.5))
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Theme.quaternaryText)
             }
             .foregroundStyle(.white)
-            .padding()
-            .background(instrumentColor.opacity(0.2))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .padding(Theme.Spacing.md)
+            .background(instrumentColor.opacity(0.12))
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(instrumentColor.opacity(0.3), lineWidth: 1)
+                RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous)
+                    .stroke(instrumentColor.opacity(0.2), lineWidth: 1)
             }
         }
-        .padding(.horizontal)
+        .pressable()
+        .padding(.horizontal, Theme.Spacing.lg)
     }
     
     // MARK: - Instrument Info Section
     
     private var instrumentInfoSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Image(systemName: selectedInstrument.icon)
-                    .foregroundStyle(instrumentColor)
+        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.sm) {
+                ZStack {
+                    Circle()
+                        .fill(instrumentColor.opacity(0.15))
+                        .frame(width: 32, height: 32)
+                    Image(systemName: selectedInstrument.icon)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(instrumentColor)
+                }
                 Text(selectedInstrument.displayName)
-                    .font(Theme.mono(16, weight: .bold))
+                    .font(Theme.mono(15, weight: .bold))
                     .foregroundStyle(.white)
             }
             
             Text(selectedInstrument.description)
                 .font(Theme.mono(12))
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(Theme.secondaryText)
                 .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
+                .multilineTextAlignment(.leading)
             
             if selectedInstrument == .sdoAIA {
                 Text(viewModel.selectedWavelength.description)
                     .font(Theme.mono(11))
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(Theme.tertiaryText)
+                    .padding(.top, Theme.Spacing.xs)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
+        .padding(Theme.Spacing.lg)
         .background(Theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .padding(.horizontal)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.Radius.lg, style: .continuous)
+                .stroke(Color.white.opacity(0.06), lineWidth: 1)
+        )
+        .padding(.horizontal, Theme.Spacing.lg)
     }
     
     // MARK: - Helper Methods
@@ -444,26 +485,27 @@ struct InstrumentChip: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
+            HStack(spacing: Theme.Spacing.sm) {
                 Circle()
                     .fill(chipColor)
-                    .frame(width: 12, height: 12)
+                    .frame(width: 10, height: 10)
+                    .shadow(color: isSelected ? chipColor.opacity(0.5) : .clear, radius: 4)
                 Text(instrument.rawValue)
                     .font(Theme.mono(13, weight: isSelected ? .bold : .medium))
             }
-            .foregroundStyle(isSelected ? .white : .white.opacity(0.6))
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .background(isSelected ? chipColor.opacity(0.3) : Color.white.opacity(0.1))
+            .foregroundStyle(isSelected ? .white : Theme.secondaryText)
+            .padding(.horizontal, Theme.Spacing.md)
+            .padding(.vertical, Theme.Spacing.sm)
+            .background(isSelected ? chipColor.opacity(0.2) : Color.white.opacity(0.06))
             .clipShape(Capsule())
             .overlay {
-                if isSelected {
-                    Capsule()
-                        .stroke(chipColor, lineWidth: 2)
-                }
+                Capsule()
+                    .stroke(isSelected ? chipColor.opacity(0.4) : Color.white.opacity(0.08), lineWidth: 1)
             }
         }
         .buttonStyle(.plain)
+        .scaleEffect(isSelected ? 1.02 : 1.0)
+        .animation(Theme.Animation.spring, value: isSelected)
     }
     
     private var chipColor: Color {
@@ -502,14 +544,18 @@ struct QuickTimeButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(Theme.mono(11, weight: .medium))
+                .font(Theme.mono(11, weight: .semibold))
                 .foregroundStyle(.white)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(Color.white.opacity(0.15))
+                .padding(.horizontal, Theme.Spacing.md)
+                .padding(.vertical, Theme.Spacing.sm)
+                .background(Color.white.opacity(0.08))
                 .clipShape(Capsule())
+                .overlay(
+                    Capsule().stroke(Color.white.opacity(0.1), lineWidth: 1)
+                )
         }
         .buttonStyle(.plain)
+        .pressable()
     }
 }
 
@@ -538,26 +584,27 @@ struct WavelengthChip: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 6) {
+            HStack(spacing: Theme.Spacing.sm) {
                 Circle()
                     .fill(wavelengthColor)
-                    .frame(width: 12, height: 12)
+                    .frame(width: 10, height: 10)
+                    .shadow(color: isSelected ? wavelengthColor.opacity(0.5) : .clear, radius: 4)
                 Text(wavelength.rawValue)
                     .font(Theme.mono(13, weight: isSelected ? .bold : .medium))
             }
-            .foregroundStyle(isSelected ? .white : .white.opacity(0.6))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(isSelected ? wavelengthColor.opacity(0.3) : Color.white.opacity(0.1))
+            .foregroundStyle(isSelected ? .white : Theme.secondaryText)
+            .padding(.horizontal, Theme.Spacing.md)
+            .padding(.vertical, Theme.Spacing.sm)
+            .background(isSelected ? wavelengthColor.opacity(0.2) : Color.white.opacity(0.06))
             .clipShape(Capsule())
             .overlay {
-                if isSelected {
-                    Capsule()
-                        .stroke(wavelengthColor, lineWidth: 2)
-                }
+                Capsule()
+                    .stroke(isSelected ? wavelengthColor.opacity(0.4) : Color.white.opacity(0.08), lineWidth: 1)
             }
         }
         .buttonStyle(.plain)
+        .scaleEffect(isSelected ? 1.02 : 1.0)
+        .animation(Theme.Animation.spring, value: isSelected)
     }
     
     private var wavelengthColor: Color {

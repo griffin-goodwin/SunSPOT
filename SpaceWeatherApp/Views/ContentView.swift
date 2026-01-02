@@ -10,19 +10,22 @@ public struct ContentView: View {
     private let hasPromptedForNotificationsKey = "hasPromptedForNotifications"
     
     public init() {
-        // Custom tab bar appearance
+        // Custom tab bar appearance with enhanced styling
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(white: 0.06, alpha: 0.95)
+        appearance.backgroundColor = UIColor(white: 0.05, alpha: 0.98)
+        
+        // Add subtle top border
+        appearance.shadowColor = UIColor.white.withAlphaComponent(0.08)
         
         // Unselected state
-        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(white: 0.5, alpha: 1)
+        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(white: 0.45, alpha: 1)
         appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-            .foregroundColor: UIColor(white: 0.5, alpha: 1),
+            .foregroundColor: UIColor(white: 0.45, alpha: 1),
             .font: UIFont.monospacedSystemFont(ofSize: 10, weight: .medium)
         ]
         
-        // Selected state
+        // Selected state with enhanced visibility
         appearance.stackedLayoutAppearance.selected.iconColor = UIColor(Theme.tabAccent)
         appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
             .foregroundColor: UIColor(Theme.tabAccent),

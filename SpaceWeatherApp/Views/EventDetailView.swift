@@ -37,7 +37,7 @@ struct EventDetailView: View {
             .padding()
         }
         .scrollContentBackground(.hidden)
-        .background(Theme.backgroundGradient)
+        .background(MeshGradientBackground(style: .activity))
         .navigationTitle(event.type.displayName)
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
@@ -54,7 +54,7 @@ struct EventDetailView: View {
     }
     
     private var headerCard: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: Theme.Spacing.lg) {
             // CME events show full LASCO coronagraph image
             if isCMEEvent {
                 cmeImageView
@@ -73,6 +73,7 @@ struct EventDetailView: View {
                                 ProgressView()
                                     .scaleEffect(1.2)
                             }
+                            .shimmer()
                     } else if let url = eventImageURL {
                         AsyncImage(url: url) { phase in
                             switch phase {
@@ -100,15 +101,23 @@ struct EventDetailView: View {
                                 .clipShape(Circle())
                                 .overlay(
                                     Circle()
-                                        .stroke(colorForType(event.type), lineWidth: 4)
+                                        .stroke(
+                                            LinearGradient(
+                                                colors: [colorForType(event.type), colorForType(event.type).opacity(0.5)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 4
+                                        )
                                 )
-                                .shadow(color: colorForType(event.type).opacity(0.5), radius: 15)
+                                .shadow(color: colorForType(event.type).opacity(0.5), radius: 20, x: 0, y: 8)
                                 
                             case .empty:
                                 Circle()
                                     .fill(Color.black.opacity(0.3))
                                     .frame(width: 280, height: 280)
                                     .overlay { ProgressView() }
+                                    .shimmer()
                             default:
                                 fallbackIcon
                             }
@@ -127,26 +136,36 @@ struct EventDetailView: View {
                 noLocationDataView
             }
             
-            // Title
+            // Title with better typography
             Text(event.title)
                 .font(Theme.mono(20, weight: .bold))
                 .multilineTextAlignment(.center)
+                .foregroundStyle(Theme.primaryText)
             
             // Severity badge
             SeverityBadge(severity: event.severity)
             
-            // Date and time
-            HStack {
+            // Date and time with refined styling
+            HStack(spacing: Theme.Spacing.sm) {
                 Image(systemName: "calendar")
+                    .foregroundStyle(Theme.accentColor)
                 Text(event.date.formattedDateTime)
             }
             .font(Theme.mono(14))
-            .foregroundStyle(.secondary)
+            .foregroundStyle(Theme.secondaryText)
+            .padding(.horizontal, Theme.Spacing.md)
+            .padding(.vertical, Theme.Spacing.xs)
+            .background(Color.white.opacity(0.04))
+            .clipShape(Capsule())
         }
         .frame(maxWidth: .infinity)
-        .padding()
+        .padding(Theme.Spacing.xl)
         .background(Theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.lg))
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.Radius.lg)
+                .stroke(Color.white.opacity(0.06), lineWidth: 1)
+        )
     }
     
     private var wavelengthLabel: String {
@@ -157,21 +176,27 @@ struct EventDetailView: View {
         Button {
             showWavelengthSheet = true
         } label: {
-            HStack(spacing: 6) {
+            HStack(spacing: Theme.Spacing.sm) {
                 Circle()
                     .fill(isCMEEvent ? colorForInstrument(selectedInstrument) : colorForWavelength(selectedWavelength))
                     .frame(width: 12, height: 12)
+                    .shadow(color: (isCMEEvent ? colorForInstrument(selectedInstrument) : colorForWavelength(selectedWavelength)).opacity(0.5), radius: 4)
                 Text(isCMEEvent ? selectedInstrument.displayName : selectedWavelength.rawValue)
-                    .font(Theme.mono(13, weight: .medium))
+                    .font(Theme.mono(13, weight: .semibold))
                 Image(systemName: "chevron.down")
                     .font(Theme.mono(10))
             }
-            .foregroundStyle(.white)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(Theme.cardBackground)
+            .foregroundStyle(Theme.primaryText)
+            .padding(.horizontal, Theme.Spacing.md)
+            .padding(.vertical, Theme.Spacing.sm)
+            .background(Color.white.opacity(0.08))
             .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(Color.white.opacity(0.1), lineWidth: 1)
+            )
         }
+        .buttonStyle(.plain)
         .sheet(isPresented: $showWavelengthSheet) {
             if isCMEEvent {
                 CMEInstrumentPickerSheet(
@@ -325,10 +350,15 @@ struct EventDetailView: View {
     }
     
     private var detailsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
             HStack {
-                Text("Event Details")
-                    .font(Theme.mono(16, weight: .bold))
+                HStack(spacing: Theme.Spacing.sm) {
+                    Image(systemName: "doc.text.fill")
+                        .foregroundStyle(Theme.accentColor)
+                    Text("Event Details")
+                        .font(Theme.mono(16, weight: .bold))
+                        .foregroundStyle(Theme.primaryText)
+                }
                 Spacer()
                 // Source badge
                 SourceBadgeLarge(source: event.source)
@@ -336,75 +366,125 @@ struct EventDetailView: View {
             
             Text(event.details)
                 .font(Theme.mono(14))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.secondaryText)
+                .lineSpacing(4)
             
             // Show strength if available for flares
             if event.type == .solarFlare, let strength = event.strengthDisplay {
-                HStack {
+                HStack(spacing: Theme.Spacing.sm) {
                     Text("Intensity:")
                         .font(Theme.mono(14))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Theme.secondaryText)
                     Text(strength)
-                        .font(Theme.mono(15, weight: .bold))
-                        .foregroundStyle(.orange)
+                        .font(Theme.mono(16, weight: .bold))
+                        .foregroundStyle(Theme.accentColor)
                 }
+                .padding(.top, Theme.Spacing.xs)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
+        .padding(Theme.Spacing.lg)
         .background(Theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.lg))
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.Radius.lg)
+                .stroke(Color.white.opacity(0.06), lineWidth: 1)
+        )
     }
     
     private var infoSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("About \(event.type.displayName)")
-                .font(Theme.mono(16, weight: .bold))
+        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+            HStack(spacing: Theme.Spacing.sm) {
+                Image(systemName: "info.circle.fill")
+                    .foregroundStyle(Theme.accentSecondary)
+                Text("About \(event.type.displayName)")
+                    .font(Theme.mono(16, weight: .bold))
+                    .foregroundStyle(Theme.primaryText)
+            }
             
             Text(descriptionForEventType(event.type))
                 .font(Theme.mono(14))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.secondaryText)
+                .lineSpacing(4)
             
             // Potential impacts
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Potential Impacts")
-                    .font(Theme.mono(14, weight: .semibold))
+            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                HStack(spacing: Theme.Spacing.sm) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(Theme.warning)
+                    Text("Potential Impacts")
+                        .font(Theme.mono(14, weight: .semibold))
+                        .foregroundStyle(Theme.primaryText)
+                }
                 
                 ForEach(impactsForEventType(event.type), id: \.self) { impact in
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundStyle(.orange)
-                            .font(Theme.mono(12))
+                    HStack(alignment: .top, spacing: Theme.Spacing.sm) {
+                        Circle()
+                            .fill(Theme.warning.opacity(0.5))
+                            .frame(width: 6, height: 6)
+                            .padding(.top, 6)
                         Text(impact)
-                            .font(Theme.mono(14))
-                            .foregroundStyle(.secondary)
+                            .font(Theme.mono(13))
+                            .foregroundStyle(Theme.secondaryText)
                     }
                 }
             }
-            .padding(.top, 8)
+            .padding(.top, Theme.Spacing.sm)
+            .padding(Theme.Spacing.md)
+            .background(Theme.warning.opacity(0.08))
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.md))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(Color.secondaryGroupedBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(Theme.Spacing.lg)
+        .background(Theme.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.lg))
+        .overlay(
+            RoundedRectangle(cornerRadius: Theme.Radius.lg)
+                .stroke(Color.white.opacity(0.06), lineWidth: 1)
+        )
     }
     
     private func linkSection(url: URL) -> some View {
         Button {
             openURL(url)
         } label: {
-            HStack {
-                Image(systemName: "link")
-                Text("View on NASA DONKI")
+            HStack(spacing: Theme.Spacing.md) {
+                ZStack {
+                    Circle()
+                        .fill(Color.blue.opacity(0.2))
+                        .frame(width: 36, height: 36)
+                    Image(systemName: "link")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.blue)
+                }
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("View on NASA DONKI")
+                        .font(Theme.mono(15, weight: .bold))
+                        .foregroundStyle(Theme.primaryText)
+                    Text("Open in browser")
+                        .font(Theme.mono(11))
+                        .foregroundStyle(Theme.tertiaryText)
+                }
+                
                 Spacer()
+                
                 Image(systemName: "arrow.up.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Theme.tertiaryText)
+                    .padding(Theme.Spacing.sm)
+                    .background(Color.white.opacity(0.08))
+                    .clipShape(Circle())
             }
-            .font(Theme.mono(16, weight: .bold))
-            .foregroundStyle(.white)
-            .padding()
-            .background(Color.blue)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(Theme.Spacing.lg)
+            .background(Theme.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.lg))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.lg)
+                    .stroke(Color.blue.opacity(0.3), lineWidth: 1)
+            )
         }
+        .buttonStyle(.plain)
     }
     
     private func colorForType(_ type: SpaceWeatherEventType) -> Color {

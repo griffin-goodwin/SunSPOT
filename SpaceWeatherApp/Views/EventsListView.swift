@@ -34,7 +34,7 @@ struct EventsListView: View {
                     }
                 }
             }
-            .background(Theme.backgroundGradient)
+            .background(Color.clear)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -77,12 +77,17 @@ struct EventsListView: View {
     // MARK: - Date Controls Header
     
     private var dateControlsHeader: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: Theme.Spacing.md) {
             // Time range picker
             HStack {
-                Text("Time Range")
-                    .font(Theme.mono(14))
-                    .foregroundStyle(.white.opacity(0.7))
+                HStack(spacing: Theme.Spacing.sm) {
+                    Image(systemName: "clock")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Theme.accentColor)
+                    Text("Time Range")
+                        .font(Theme.mono(14, weight: .medium))
+                        .foregroundStyle(Theme.primaryText)
+                }
                 
                 Spacer()
                 
@@ -94,16 +99,35 @@ struct EventsListView: View {
                     Text("7 days").tag(168.0)
                 }
                 .pickerStyle(.menu)
-                .tint(.orange)
+                .tint(Theme.accentColor)
             }
             
-            // Event count
-            Text("\(filteredEventsList.count) events in \(formatTimeRange(viewModel.overlayTimeRangeHours))")
-                .font(Theme.mono(12))
-                .foregroundStyle(.white.opacity(0.5))
+            // Event count with pill styling
+            HStack(spacing: Theme.Spacing.xs) {
+                Text("\(filteredEventsList.count)")
+                    .font(Theme.mono(13, weight: .bold))
+                    .foregroundStyle(Theme.accentColor)
+                Text("events in")
+                    .font(Theme.mono(12))
+                    .foregroundStyle(Theme.tertiaryText)
+                Text(formatTimeRange(viewModel.overlayTimeRangeHours))
+                    .font(Theme.mono(12, weight: .medium))
+                    .foregroundStyle(Theme.secondaryText)
+            }
+            .padding(.horizontal, Theme.Spacing.md)
+            .padding(.vertical, Theme.Spacing.xs)
+            .background(Color.white.opacity(0.04))
+            .clipShape(Capsule())
         }
-        .padding()
-        .background(Theme.cardBackground)
+        .padding(Theme.Spacing.lg)
+        .background {
+            Theme.cardBackground
+                .overlay(alignment: .bottom) {
+                    Rectangle()
+                        .fill(Color.white.opacity(0.06))
+                        .frame(height: 1)
+                }
+        }
     }
     
     private func formatTimeRange(_ hours: Double) -> String {
@@ -138,50 +162,57 @@ struct EventRowView: View {
     let event: SpaceWeatherEvent
     
     var body: some View {
-        HStack(spacing: 12) {
-            // Event type icon - use white with colored background
-            Image(systemName: event.type.icon)
-                .font(.title2)
-                .foregroundStyle(.white)
-                .frame(width: 40, height: 40)
-                .background(colorForType(event.type).opacity(0.3))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(event.title)
-                    .font(Theme.mono(16, weight: .bold))
+        HStack(spacing: Theme.Spacing.md) {
+            // Event type icon with glow effect
+            ZStack {
+                Circle()
+                    .fill(colorForType(event.type).opacity(0.15))
+                    .frame(width: 44, height: 44)
+                Circle()
+                    .fill(colorForType(event.type).opacity(0.25))
+                    .frame(width: 36, height: 36)
+                Image(systemName: event.type.icon)
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(.white)
+            }
+            .shadow(color: colorForType(event.type).opacity(0.3), radius: 6, x: 0, y: 2)
+            
+            VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                Text(event.title)
+                    .font(Theme.mono(15, weight: .bold))
+                    .foregroundStyle(Theme.primaryText)
                     .lineLimit(1)
                 
                 // Show more useful details based on event type
                 Text(eventSubtitle)
-                    .font(Theme.mono(14))
-                    .foregroundStyle(.white.opacity(0.7))
+                    .font(Theme.mono(13))
+                    .foregroundStyle(Theme.secondaryText)
                     .lineLimit(2)
                 
-                HStack(spacing: 8) {
+                HStack(spacing: Theme.Spacing.sm) {
                     SeverityBadge(severity: event.severity)
                     
                     // Show coordinates if available
                     if let x = event.hpcX, let y = event.hpcY {
                         Text(formatCoordinates(x: x, y: y))
-                            .font(Theme.mono(10))
-                            .foregroundStyle(.white.opacity(0.6))
-                            .padding(.horizontal, 6)
+                            .font(Theme.mono(10, weight: .medium))
+                            .foregroundStyle(Theme.tertiaryText)
+                            .padding(.horizontal, Theme.Spacing.sm)
                             .padding(.vertical, 2)
-                            .background(Color.white.opacity(0.15))
+                            .background(Color.white.opacity(0.08))
                             .clipShape(Capsule())
                     }
                     
                     Spacer()
                     
                     Text(event.date.formatted(date: .omitted, time: .shortened))
-                        .font(Theme.mono(12))
-                        .foregroundStyle(.white.opacity(0.6))
+                        .font(Theme.mono(11, weight: .medium))
+                        .foregroundStyle(Theme.tertiaryText)
                 }
+                .padding(.top, 2)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, Theme.Spacing.sm)
     }
     
     private var eventSubtitle: String {
@@ -236,12 +267,17 @@ struct SeverityBadge: View {
         // Only show badge if severity has a label (i.e., for flares)
         if severity != .none {
             Text(severity.rawValue)
-                .font(Theme.mono(12, weight: .medium))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
+                .font(Theme.mono(11, weight: .bold))
+                .padding(.horizontal, Theme.Spacing.sm)
+                .padding(.vertical, 3)
                 .background(severityColor.opacity(0.2))
                 .foregroundStyle(severityColor)
                 .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(severityColor.opacity(0.3), lineWidth: 1)
+                )
+                .shadow(color: severityColor.opacity(0.25), radius: 4, x: 0, y: 1)
         }
     }
     
@@ -376,17 +412,34 @@ struct FilterSheet: View {
 // MARK: - Supporting Views
 
 struct LoadingView: View {
+    @State private var isAnimating = false
+    
     var body: some View {
-        VStack(spacing: 16) {
-            ProgressView()
-                .scaleEffect(1.5)
-                .tint(.orange)
-            Text("Loading space weather data...")
-                .font(Theme.mono(14))
-                .foregroundStyle(.white.opacity(0.7))
+        VStack(spacing: Theme.Spacing.lg) {
+            ZStack {
+                Circle()
+                    .stroke(Theme.accentColor.opacity(0.2), lineWidth: 3)
+                    .frame(width: 50, height: 50)
+                Circle()
+                    .trim(from: 0, to: 0.7)
+                    .stroke(Theme.accentColor, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .frame(width: 50, height: 50)
+                    .rotationEffect(.degrees(isAnimating ? 360 : 0))
+                    .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: isAnimating)
+            }
+            
+            VStack(spacing: Theme.Spacing.xs) {
+                Text("Loading space weather data")
+                    .font(Theme.mono(14, weight: .medium))
+                    .foregroundStyle(Theme.primaryText)
+                Text("Fetching from NOAA & NASA...")
+                    .font(Theme.mono(12))
+                    .foregroundStyle(Theme.tertiaryText)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Theme.backgroundGradient)
+        .background(Color.clear)
+        .onAppear { isAnimating = true }
     }
 }
 

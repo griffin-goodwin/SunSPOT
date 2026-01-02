@@ -26,7 +26,7 @@ struct DashboardView: View {
                 .padding()
             }
             .scrollContentBackground(.hidden)
-            .background(Theme.backgroundGradient)
+            .background(Color.clear)
             .navigationTitle("Dashboard")
             .toolbar {
                 ToolbarItem(placement: .automatic) {

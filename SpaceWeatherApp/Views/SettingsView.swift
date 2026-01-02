@@ -9,13 +9,17 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationStack {
-            List {
+            ZStack {
+                // Background gradient
+                MeshGradientBackground(style: .settings)
+                
+                List {
                 // Notifications Section
                 Section {
                     NavigationLink {
                         NotificationSettingsView(notificationManager: notificationManager)
                     } label: {
-                        HStack(spacing: 16) {
+                        HStack(spacing: Theme.Spacing.md) {
                             ZStack {
                                 Circle()
                                     .fill(Theme.accentColor.opacity(0.2))
@@ -25,18 +29,18 @@ struct SettingsView: View {
                                     .font(.system(size: 16))
                             }
                             
-                            VStack(alignment: .leading, spacing: 4) {
+                            VStack(alignment: .leading, spacing: 2) {
                                 Text("Notification Settings")
-                                    .font(Theme.mono(16, weight: .medium))
+                                    .font(Theme.mono(15, weight: .semibold))
                                     .foregroundStyle(Theme.primaryText)
                                 
                                 if notificationManager.hasAnyNotificationsEnabled {
                                     Text("\(enabledNotificationCount) alert types enabled")
-                                        .font(Theme.mono(12))
+                                        .font(Theme.mono(10))
                                         .foregroundStyle(Theme.secondaryText)
                                 } else {
                                     Text("No alerts enabled")
-                                        .font(Theme.mono(12))
+                                        .font(Theme.mono(10))
                                         .foregroundStyle(Theme.tertiaryText)
                                 }
                             }
@@ -230,7 +234,7 @@ struct SettingsView: View {
                 AboutSheet()
             }
             .scrollContentBackground(.hidden)
-            .background(Theme.backgroundGradient)
+            }
         }
         .preferredColorScheme(.dark)
     }
@@ -276,17 +280,28 @@ struct LinkRow: View {
     
     var body: some View {
         Link(destination: URL(string: url)!) {
-            HStack {
-                Image(systemName: icon)
-                    .foregroundStyle(color)
-                    .frame(width: 24)
+            HStack(spacing: Theme.Spacing.md) {
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.15))
+                        .frame(width: 32, height: 32)
+                    Image(systemName: icon)
+                        .foregroundStyle(color)
+                        .font(.system(size: 14))
+                }
+                
                 Text(title)
-                    .font(Theme.mono(14))
+                    .font(Theme.mono(14, weight: .medium))
                     .foregroundStyle(Theme.primaryText)
+                
                 Spacer()
+                
                 Image(systemName: "arrow.up.right")
-                    .font(.caption)
+                    .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(Theme.tertiaryText)
+                    .padding(Theme.Spacing.xs)
+                    .background(Color.white.opacity(0.06))
+                    .clipShape(Circle())
             }
         }
         .listRowBackground(Theme.cardBackground)
@@ -548,7 +563,7 @@ struct NotificationSettingsView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .background(Theme.backgroundGradient)
+        .background(MeshGradientBackground(style: .settings))
         .navigationTitle("Notifications")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -561,14 +576,20 @@ struct NotificationRow: View {
     let subtitle: String
     
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .foregroundStyle(iconColor)
-                .frame(width: 24)
+        HStack(spacing: Theme.Spacing.md) {
+            ZStack {
+                Circle()
+                    .fill(iconColor.opacity(0.15))
+                    .frame(width: 32, height: 32)
+                Image(systemName: icon)
+                    .foregroundStyle(iconColor)
+                    .font(.system(size: 14))
+            }
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(Theme.mono(14, weight: .medium))
+                    .foregroundStyle(Theme.primaryText)
                 Text(subtitle)
                     .font(.caption) // Keeping standard font for readability
                     .foregroundStyle(Theme.secondaryText)
@@ -682,7 +703,7 @@ struct APIInfoSheet: View {
                 }
                 .padding(20)
             }
-            .background(Theme.backgroundGradient)
+            .background(MeshGradientBackground(style: .settings))
             .navigationTitle("API Info")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
@@ -786,7 +807,7 @@ struct AboutSheet: View {
                 }
                 .padding(20)
             }
-            .background(Theme.backgroundGradient)
+            .background(MeshGradientBackground(style: .settings))
             .navigationTitle("About")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
