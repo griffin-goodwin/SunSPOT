@@ -1,14 +1,14 @@
-# SunSPOT Privacy Policy
+# Sol. Privacy Policy
 
 **Last Updated: January 1, 2026**
 
 ## Overview
 
-SunSPOT ("the App") is a space weather monitoring application that displays publicly available solar and geomagnetic data. Your privacy is important to us, and this policy explains how the App handles information.
+Sol. ("the App") is a space weather monitoring application that displays publicly available solar and geomagnetic data. Your privacy is important to us, and this policy explains how the App handles information.
 
 ## Data Collection
 
-**SunSPOT does not collect, store, or transmit any personal data.**
+**Sol. does not collect, store, or transmit any personal data.**
 
 The App:
 - Does NOT require user accounts or login
@@ -40,7 +40,7 @@ If you enable notifications, the App will send local alerts about space weather 
 
 ## Children's Privacy
 
-SunSPOT does not knowingly collect any information from children under 13 years of age. The App is designed for general audiences interested in space weather.
+Sol. does not knowingly collect any information from children under 13 years of age. The App is designed for general audiences interested in space weather.
 
 ## Changes to This Policy
 

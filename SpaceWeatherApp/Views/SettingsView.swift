@@ -200,13 +200,13 @@ struct SettingsView: View {
                     Button {
                         showingAbout = true
                     } label: {
-                        Label("About SunSPOT", systemImage: "sparkles")
+                        Label("About Sol.", systemImage: "sparkles")
                             .font(Theme.mono(14))
                             .foregroundStyle(Theme.primaryText)
                     }
                     .listRowBackground(Theme.cardBackground)
                     
-                    LinkRow(title: "Privacy Policy", icon: "hand.raised.fill", color: Theme.accentSecondary, url: "https://github.com/griffin-goodwin/SunSPOT/blob/main/PRIVACY_POLICY.md")
+                    LinkRow(title: "Privacy Policy", icon: "hand.raised.fill", color: Theme.accentSecondary, url: "https://github.com/griffin-goodwin/Sol/blob/main/PRIVACY_POLICY.md")
                 } header: {
                     Text("ABOUT")
                         .font(Theme.mono(12, weight: .bold))
@@ -699,7 +699,7 @@ struct AboutSheet: View {
                             .foregroundStyle(Theme.accentColor)
                             .shadow(color: Theme.accentColor.opacity(0.5), radius: 20)
                         
-                        Text("SunSPOT")
+                        Text("Sol.")
                             .font(Theme.mono(28, weight: .black))
                             .tracking(2)
                         
@@ -717,7 +717,7 @@ struct AboutSheet: View {
                             .foregroundStyle(Theme.secondaryText)
                         
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("SunSPOT provides real-time access to solar imagery and space weather alerts from NASA's Solar Dynamics Observatory and NOAA's Space Weather Prediction Center.")
+                            Text("Sol. provides real-time access to solar imagery and space weather alerts from NASA's Solar Dynamics Observatory and NOAA's Space Weather Prediction Center.")
                             
                             Text("Stay informed about solar flares, coronal mass ejections, and geomagnetic storms that can affect Earth's technology, communications, and power grids.")
                         }
@@ -754,11 +754,11 @@ struct AboutSheet: View {
                             .foregroundStyle(Theme.secondaryText)
                         
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("SunSPOT does not collect any personal data. Space weather data is provided by public government sources.")
+                            Text("Sol. does not collect any personal data. Space weather data is provided by public government sources.")
                                 .font(.caption)
                                 .foregroundStyle(Theme.tertiaryText)
                             
-                            Text("© 2026 SunSPOT. All rights reserved.")
+                            Text("© 2026 Sol. All rights reserved.")
                                 .font(.caption)
                                 .foregroundStyle(Theme.tertiaryText)
                         }

@@ -47,7 +47,7 @@ class NotificationManager: NSObject, ObservableObject {
     private let preferencesKey = "notificationPreferences"
     
     // Background task identifier
-    static let backgroundTaskIdentifier = "com.griffingoodwin.sunspot.refresh"
+    static let backgroundTaskIdentifier = "com.griffingoodwin.sol.refresh"
     
     override init() {
         // Load preferences

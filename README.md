@@ -1,10 +1,10 @@
-# SunSPOT
+# Sol.
 
 ☀️ Real-time space weather monitoring for iOS
 
 ## About
 
-SunSPOT is a space weather app that provides real-time information about solar activity, including:
+Sol. is a space weather app that provides real-time information about solar activity, including:
 
 - **Solar Flares** - X, M, C class flare alerts with severity indicators
 - **Coronal Mass Ejections (CMEs)** - Earth-directed CME tracking
@@ -33,11 +33,11 @@ SunSPOT is a space weather app that provides real-time information about solar a
 
 ## Privacy
 
-SunSPOT does not collect any personal data. See [Privacy Policy](PRIVACY_POLICY.md) for details.
+Sol. does not collect any personal data. See [Privacy Policy](PRIVACY_POLICY.md) for details.
 
 ## License
 
-© 2026 SunSPOT. All rights reserved.
+© 2026 Sol. All rights reserved.
 
 ## Contact
 
