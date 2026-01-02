@@ -4,6 +4,10 @@ import SwiftUI
 public struct ContentView: View {
     @State private var viewModel = SpaceWeatherViewModel()
     @State private var selectedTab = 0
+    @State private var showNotificationPrompt = false
+    @StateObject private var notificationManager = NotificationManager.shared
+    
+    private let hasPromptedForNotificationsKey = "hasPromptedForNotifications"
     
     public init() {
         // Custom tab bar appearance
@@ -67,6 +71,26 @@ public struct ContentView: View {
             await viewModel.loadXRayFlux()
             await viewModel.loadEvents()
             await viewModel.loadFlareProbabilities()
+            
+            // Check if we should prompt for notifications
+            if !UserDefaults.standard.bool(forKey: hasPromptedForNotificationsKey) {
+                // Small delay to let the UI settle
+                try? await Task.sleep(for: .seconds(1.5))
+                showNotificationPrompt = true
+            }
+        }
+        .alert("Enable Notifications?", isPresented: $showNotificationPrompt) {
+            Button("Enable") {
+                Task {
+                    await notificationManager.requestAuthorization()
+                    UserDefaults.standard.set(true, forKey: hasPromptedForNotificationsKey)
+                }
+            }
+            Button("Not Now", role: .cancel) {
+                UserDefaults.standard.set(true, forKey: hasPromptedForNotificationsKey)
+            }
+        } message: {
+            Text("Get alerts for solar flares, geomagnetic storms, and other space weather events that could affect Earth.")
         }
         .preferredColorScheme(.dark)
     }
