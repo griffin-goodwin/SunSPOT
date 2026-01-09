@@ -204,7 +204,7 @@ struct SettingsView: View {
                     Button {
                         showingAbout = true
                     } label: {
-                        Label("About Sol.", systemImage: "sparkles")
+                        Label("About SOL.SWx", systemImage: "sparkles")
                             .font(Theme.mono(14))
                             .foregroundStyle(Theme.primaryText)
                     }
@@ -535,7 +535,7 @@ struct NotificationSettingsView: View {
                             .font(Theme.mono(14, weight: .semibold))
                     }
                     
-                    Text("Sol. checks for new space weather events periodically when iOS refreshes the app in the background. This is not instant push notification—there may be delays of 15 minutes to several hours depending on your device usage patterns and battery state.")
+                    Text("SOL.SWx checks for new space weather events periodically when iOS refreshes the app in the background. This is not instant push notification—there may be delays of 15 minutes to several hours depending on your device usage patterns and battery state.")
                         .font(Theme.mono(11))
                         .foregroundStyle(Theme.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
@@ -749,7 +749,7 @@ struct AboutSheet: View {
                             .foregroundStyle(Theme.accentColor)
                             .shadow(color: Theme.accentColor.opacity(0.5), radius: 20)
                         
-                        Text("Sol.")
+                        Text("SOL.SWx")
                             .font(Theme.mono(28, weight: .black))
                             .tracking(2)
                         
@@ -767,7 +767,7 @@ struct AboutSheet: View {
                             .foregroundStyle(Theme.secondaryText)
                         
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Sol. provides real-time access to solar imagery and space weather alerts from NASA's Solar Dynamics Observatory and NOAA's Space Weather Prediction Center.")
+                            Text("SOL.SWx provides real-time access to solar imagery and space weather alerts from NASA's Solar Dynamics Observatory and NOAA's Space Weather Prediction Center.")
                             
                             Text("Stay informed about solar flares, coronal mass ejections, and geomagnetic storms that can affect Earth's technology, communications, and power grids.")
                         }
@@ -804,11 +804,11 @@ struct AboutSheet: View {
                             .foregroundStyle(Theme.secondaryText)
                         
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Sol. does not collect any personal data. Space weather data is provided by public government sources.")
+                            Text("SOL.SWx. does not collect any personal data. Space weather data is provided by public government sources.")
                                 .font(.caption)
                                 .foregroundStyle(Theme.tertiaryText)
                             
-                            Text("© 2026 Sol. All rights reserved.")
+                            Text("© 2026 SOL.SWx All rights reserved.")
                                 .font(.caption)
                                 .foregroundStyle(Theme.tertiaryText)
                         }

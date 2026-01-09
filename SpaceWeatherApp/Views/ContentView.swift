@@ -40,33 +40,27 @@ public struct ContentView: View {
         TabView(selection: $selectedTab) {
             SDOImageView(viewModel: viewModel)
                 .tabItem {
-                    Label {
-                        Text("SOL.SWx")
-                    } icon: {
-                        Image(systemName: "sun.max.fill")
-                    }
+                    Label("IMAGES", systemImage: "sun.max.fill")
                 }
                 .tag(0)
             
             ActivityView(viewModel: viewModel)
                 .tabItem {
-                    Label {
-                        Text("ACTIVITY")
-                    } icon: {
-                        Image(systemName: "waveform.path.ecg")
-                    }
+                    Label("ACTIVITY", systemImage: "waveform.path.ecg")
                 }
                 .tag(1)
             
-            SettingsView(viewModel: viewModel)
+            AuroraView()
                 .tabItem {
-                    Label {
-                        Text("SETTINGS")
-                    } icon: {
-                        Image(systemName: "gearshape.fill")
-                    }
+                    Label("AURORA", systemImage: "globe.americas.fill")
                 }
                 .tag(2)
+            
+            SettingsView(viewModel: viewModel)
+                .tabItem {
+                    Label("SETTINGS", systemImage: "gearshape.fill")
+                }
+                .tag(3)
         }
         .tint(Theme.tabAccent)
         .task {

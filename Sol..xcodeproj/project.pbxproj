@@ -83,7 +83,7 @@
 					};
 				};
 			};
-			buildConfigurationList = CONFIG_LIST_PROJECT /* Build configuration list for PBXProject "SOL.SWx" */;
+			buildConfigurationList = CONFIG_LIST_PROJECT /* Build configuration list for PBXProject "Sol." */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -311,7 +311,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CONFIG_LIST_PROJECT /* Build configuration list for PBXProject "SOL.SWx" */ = {
+		CONFIG_LIST_PROJECT /* Build configuration list for PBXProject "Sol." */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DEBUG_CONFIG_PROJECT /* Debug */,

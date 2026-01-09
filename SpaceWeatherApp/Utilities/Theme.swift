@@ -77,6 +77,13 @@ struct Theme {
     static let warning = Color(red: 0.96, green: 0.72, blue: 0.32)
     static let danger = Color(red: 0.92, green: 0.42, blue: 0.46)
     
+    // MARK: - Aurora Colors
+    static let auroraGreen = Color(red: 0.3, green: 0.9, blue: 0.5)
+    static let auroraLow = Color(red: 0.3, green: 0.7, blue: 0.4)
+    static let auroraModerate = Color(red: 0.4, green: 0.85, blue: 0.5)
+    static let auroraHigh = Color(red: 0.5, green: 0.9, blue: 0.6)
+    static let auroraExtreme = Color(red: 0.7, green: 0.5, blue: 0.9)
+    
     // MARK: - Title Gradients
     
     /// Solar title - elegant gold to white
@@ -107,6 +114,17 @@ struct Theme {
             Color(red: 0.88, green: 0.90, blue: 0.94),  // bright silver
             Color(red: 0.72, green: 0.76, blue: 0.82),  // mid silver
             Color(red: 0.58, green: 0.64, blue: 0.72)   // steel
+        ],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    /// Aurora title - green to cyan
+    static let auroraTitleGradient = LinearGradient(
+        colors: [
+            Color(red: 0.4, green: 0.95, blue: 0.6),   // bright green
+            Color(red: 0.3, green: 0.85, blue: 0.5),   // aurora green
+            Color(red: 0.3, green: 0.75, blue: 0.6)    // teal
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
