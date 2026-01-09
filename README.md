@@ -7,6 +7,7 @@
 SOL.SWx is a space weather app that provides real-time information about solar activity, including:
 
 - **Solar Flares** - X, M, C class flare alerts with severity indicators
+- **Aurora** - View Kp index forecasts and aurora locations
 - **Coronal Mass Ejections (CMEs)** - Earth-directed CME tracking
 - **Geomagnetic Storms** - G-scale storm warnings
 - **Solar Imagery** - Live SDO images across multiple wavelengths
@@ -14,11 +15,11 @@ SOL.SWx is a space weather app that provides real-time information about solar a
 
 ## Features
 
-- 🌞 Live solar imagery from NASA's Solar Dynamics Observatory
-- ⚡ Real-time space weather alerts from NOAA SWPC
-- 🔔 Background notifications for significant events
-- 📊 Activity dashboard with current conditions
-- 🎨 Beautiful dark theme optimized for viewing solar images
+- Live solar imagery from NASA's Solar Dynamics Observatory
+- Real-time space weather alerts from NOAA SWPC
+- Background notifications for significant events
+- Activity dashboard with current conditions
+- Beautiful dark theme optimized for viewing solar images
 
 ## Data Sources
 
