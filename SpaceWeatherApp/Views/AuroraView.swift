@@ -110,7 +110,7 @@ struct AuroraView: View {
         HStack(spacing: Theme.Spacing.xl) {
             // Kp Index
             VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-                Text("Kp INDEX")
+                Text("KP INDEX")
                     .font(Theme.mono(11, weight: .medium))
                     .foregroundStyle(Theme.tertiaryText)
                 

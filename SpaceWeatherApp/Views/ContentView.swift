@@ -6,6 +6,7 @@ public struct ContentView: View {
     @State private var selectedTab = 0
     @State private var showNotificationPrompt = false
     @StateObject private var notificationManager = NotificationManager.shared
+    @State private var hasLaunched = false
     
     private let hasPromptedForNotificationsKey = "hasPromptedForNotifications"
     
@@ -78,6 +79,9 @@ public struct ContentView: View {
                 try? await Task.sleep(for: .seconds(1.5))
                 showNotificationPrompt = true
             }
+
+            // Mark that initial launch tasks completed to avoid duplicate refresh
+            hasLaunched = true
         }
         .alert("Enable Notifications?", isPresented: $showNotificationPrompt) {
             Button("Enable") {
@@ -91,6 +95,14 @@ public struct ContentView: View {
             }
         } message: {
             Text("Get alerts for solar flares, geomagnetic storms, and other space weather events that could affect Earth.")
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            // Only perform a full refresh when the app is reopened after the initial launch
+            if hasLaunched {
+                Task {
+                    await viewModel.refresh()
+                }
+            }
         }
         .preferredColorScheme(.dark)
     }

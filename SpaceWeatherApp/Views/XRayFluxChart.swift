@@ -315,6 +315,10 @@ struct XRayFluxChart: View {
             // Force chart refresh when toggling visibility
             referenceDate = Date()
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            // Refresh the reference "now" when the app becomes active (reopened)
+            referenceDate = Date()
+        }
     }
     
     private func colorForClass(_ flareClass: String) -> Color {

@@ -396,7 +396,7 @@ struct CachedAuroraPoints: Sendable {
         let startTime = CFAbsoluteTimeGetCurrent()
         
         let validPoints = points.filter { point in
-            abs(abs(point.latitude) - 90.0) >= 0.1
+            abs(abs(point.latitude) - 90.0) >= 0.01
         }
         
         let northRaw = validPoints.filter { $0.latitude > 0 }
